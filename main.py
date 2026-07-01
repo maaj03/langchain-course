@@ -1,31 +1,20 @@
 from dotenv import load_dotenv
-from langchain_core.prompts import PromptTemplate
-from langchain_openai import ChatOpenAI
 
 load_dotenv()
+from langchain.agents import create_agent
+from langchain.tools import tool
+from langchain_core.messages import HumanMessage
+from langchain_openai import ChatOpenAI, tools
+from langchain_tavily import TavilySearch
+
+llm = ChatOpenAI(model="gpt-5.4-mini", temperature=0)
+tools = [TavilySearch()]
+agent = create_agent(model=llm, tools=tools)
 
 def main():
-    print("Hello from langchain-course!")
-    information = """
-Elon Reeve Musk FRS (Pretória, 28 de junho de 1971) é um empresário,[4] empreendedor, inventor e filantropo sul-africano, naturalizado canadense e estadunidense. É o fundador, diretor executivo e diretor técnico da SpaceX; CEO da Tesla, Inc.; um dos cofundadores da OpenAI, fundador e CEO da Neuralink; cofundador, presidente da SolarCity, proprietário do X (antigo Twitter) e ex-comissário do Departamento de Eficiência Governamental dos Estados Unidos durante o segundo governo Trump em 2025. Desde 2021, Musk se posiciona como a pessoa mais rica do mundo, até então com um patrimônio líquido estimado em 200 bilhões de dólares, de acordo com o Bloomberg Billionaires Index. Já a revista Forbes estimou sua fortuna em 221,3 bilhões de dólares, principalmente de suas participações acionárias nas empresas Tesla e na SpaceX.[5] Em junho de 2026, a Forbes estimou que seu patrimônio líquido seja de US$ 1.4 trilhão, sendo o primeiro trilionário em termos nominais absolutos, além de ser o único registrado oficialmente na história moderna.[6][3]
-Musk demonstrou publicamente preocupações com a extinção humana[7] e também propôs soluções, das quais algumas são o objetivo principal de suas empresas e já estão sendo feitas na prática. Entre elas, a redução do aquecimento global, através do uso de energias renováveis, um projeto multiplanetário, mais especificamente a colonização de Marte,[8] e o desenvolvimento seguro da inteligência artificial.
-Em janeiro de 2011, uma de suas empresas, a SpaceX, tornou-se a primeira empresa no mundo a vender um voo comercial à Lua. A missão, marcada para 2013, foi contratada pela empresa Astrobotic Technology, tendo como objetivo colocar um pequeno jipe na superfície lunar, o que não aconteceu. Em 2012, encerrou o projeto do Tesla Roadster, o primeiro modelo da sua autoria, um carro totalmente elétrico que custava cerca de 92 mil dólares. A Tesla já lançou quatro modelos: S, Y, X e o Modelo 3, este último com a responsabilidade de trazer os carros elétricos para as massas, partindo de um custo inicial de 35 mil dólares.[9] Em 25 de abril de 2022, ele também concordou em comprar o Twitter por 44 bilhões de dólares.[10]
-Musk expressou opiniões que o tornaram uma figura polarizadora e controversa.[11] Ele foi criticado por fazer declarações não científicas, enganosas, ou endossar teorias da conspiração, incluindo sobre a pandemia de COVID-19 e a eleição presidencial nos Estados Unidos em 2020, além de endossar postagens antissemitas,[12] sendo que por este último ele se desculpou.[13] Em 2024, Musk foi o maior doador na eleição presidencial daquele ano[14] e desde então tem se destacado como um apoiador de personalidades, causas e partidos políticos de extrema-direita no mundo todo.[15][16]
-"""
-    summary_template = """
-    given the information {information}, about a person I want you to create:
-    1. A short summary
-    2. two interesting facts about them
-"""
-    sumarry_prompt_template = PromptTemplate(
-        input_variables=["information"], template=summary_template
-    )
-
-    llm = ChatOpenAI(model_name="gpt-5.4-mini", temperature=0)
-    chain = sumarry_prompt_template | llm
-    response = chain.invoke(input={"information": information})
-    print(response.content)
-
+    print("Hello, from langchain-course!")
+    result = agent.invoke({"messages": [HumanMessage(content="Procure por 5 vagas de emprego para coordenador de serviços de TI, com foco em N1, Field Service, SAP e IA com n8n e Langchain, verifique no linkedin e na região de São Paulo, Brasil.")]})
+    print(result)
 
 if __name__ == "__main__":
     main()
