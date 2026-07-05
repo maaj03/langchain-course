@@ -1,6 +1,6 @@
-def main():
-    print("Hello from it-assistant!")
+import asyncio
 
+from it_assistant.cli import run
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(run())
